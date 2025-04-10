@@ -7,7 +7,8 @@ public class RobotTask {
         final int avenues = 10;
         City maze = new MazeCity(streets, avenues);
 
-        MazeBot mB = new MazeBot(maze, 3,4);
-        mB.Astar();
+        MazeBot mB = new MazeBot(maze, 3,4, streets, avenues);
+        mB.takeShortestPath();
+        mB.goHome();
     }
 }

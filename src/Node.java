@@ -1,11 +1,12 @@
-
-
+/**
+ * Node to create connection between points
+ */
 public class Node implements Comparable<Node>{
     public final Point point;
     public double f = -1; //f cost = g + h
-    public double g = -1; //g cost: distance from this node to a starting node
-    public double h = -1; //h cost: distance from this node to goal node
-    public Node parent;
+    public double g = -1; //g (tentative) cost: distance from this node to a starting node
+    public double h = -1; //h (heruistic) cost: distance from this node to goal node
+    public Node parent; //adjacent node to connect
 
     public Node() {
         point = new Point();
@@ -26,6 +27,10 @@ public class Node implements Comparable<Node>{
         this.h = h;
     }
 
+    /**
+     * connects current node to other node
+     * @param node parent node
+     */
     public void setParent(Node node) {
         parent = node;
     }

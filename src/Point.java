@@ -50,6 +50,9 @@ public class Point {
         return this.x == other.x && this.y == other.y;
     }
 
+    /**
+     * it is essential to override hashCode() to use Point as a key in java sets
+     */
     @Override
     public int hashCode() {
         return 31 * (31 + x) + y;

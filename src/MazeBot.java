@@ -1,27 +1,22 @@
 import becker.robots.*;
 import java.awt.Color;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Stack;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.PriorityQueue;
 
 public class MazeBot extends DaveSoftware{
-    private final Thing treasure;
-    private final Point thingPoint;
-    private final Point home; 
+    private Thing treasure;
+    private Point thingPoint;
 
-    /**
-     * stores path to thing
-     */
-    private Stack<Point> path = new Stack<>();
-    
     private final int streets, avenues;
     
     public MazeBot(City city, int y, int x, int streets, int avenues) {
         super(city, y, x);
         this.streets = streets;
         this.avenues = avenues;
-        home = new Point(x, y);
         thingPoint = Point.createRandomPoint(0, 10, 0, 10);
         treasure = new Thing(city, thingPoint.y, thingPoint.x);
     }
@@ -36,17 +31,33 @@ public class MazeBot extends DaveSoftware{
         put(new Point(1, 0), Direction.EAST);
     }};
 
+    public void infiniteSearching() {
+       while (treasure != null) {
+           Stack<Point> path = findShortestPath(getCurrent(), thingPoint); 
+           solve(path);
+           createThingRandomly();
+            while (!dummyBag.isEmpty()) {
+                var bot = dummyBag.getLast();
+                bot.setTransparency(1);
+                dummyBag.removeLast();
+            }
+       } 
+    }
+
     /**
      * find shortest path using fancy A* algorithm
      */
-    public void takeShortestPath() {
+    ArrayList<RobotSE> dummyBag = new ArrayList<>();
+    public Stack<Point> findShortestPath(Point startPoint, Point goalPoint) {
+        Stack<Point> path = new Stack<>();
+
         PriorityQueue<Node> toVisit = new PriorityQueue<>(); 
         HashSet<Point> visited = new HashSet<>();
 
         double start_g = 0;
-        double start_h = home.distanceTo(thingPoint);
+        double start_h = startPoint.distanceTo(goalPoint);
         double start_f = start_g + start_h;
-        Node startNode = new Node(home, start_f, start_g, start_h);
+        Node startNode = new Node(startPoint, start_f, start_g, start_h);
         startNode.parent = null;
 
         toVisit.offer(startNode);
@@ -58,11 +69,10 @@ public class MazeBot extends DaveSoftware{
             visited.add(minNode.point);
 
             //if the adjacent point == thingPoint, stop searching and solve the maze
-            if (minNode.point.equals(thingPoint)) {
+            if (minNode.point.equals(goalPoint)) {
                 path = createPath(minNode);
                 path.addFirst(minNode.point);
-                solve(path);
-                return;
+                return path;
             }
 
             //check for 4 adjacent points in 4 directions 
@@ -77,13 +87,14 @@ public class MazeBot extends DaveSoftware{
 
                     //creates dummy bot to check for wall in front of it
                     RobotSE dummy = new RobotSE(getCity(), minNode.point.y, minNode.point.x, dir);
-                    dummy.setTransparency(0.9);
+                    dummy.setTransparency(0.8);
                     dummy.setColor(Color.blue);
+                    dummyBag.add(dummy);
                     if (!dummy.frontIsClear()) continue; //if there is wall in front, don't check that adjacent point in that direction
 
                     //tentative G = minNode.g + distance between minNode and adjacent Node which is always 1
                     double G = minNode.g + 1;
-                    double H = adjacentPoint.distanceTo(thingPoint);
+                    double H = adjacentPoint.distanceTo(goalPoint);
                     double F = G + H;
                     
                     //get or create node instance for the adjacent point
@@ -102,6 +113,9 @@ public class MazeBot extends DaveSoftware{
                 }
             }
         }
+
+        //no path found
+        return path;
     }
 
     /**
@@ -119,12 +133,12 @@ public class MazeBot extends DaveSoftware{
      * @return path
      */
     public Stack<Point> createPath(Node node) {
-        Stack<Point> stk = new Stack<>();
+        Stack<Point> path = new Stack<>();
         while (node.parent != null) {
-            stk.add(node.parent.point);
+            path.add(node.parent.point);
             node = node.parent;
         }
-        return stk;
+        return path;
     }
 
     /**
@@ -143,15 +157,20 @@ public class MazeBot extends DaveSoftware{
 
 
     /**
-     * go back to home by reversely iterating through path stack
+     * go back to startPoint by reversely iterating through path stack
      */
-    public void goHome() {
-        System.out.println("GOING HOME!");
-        while (!path.isEmpty()) {
-            Point p = path.getFirst();
-            path.removeFirst();
+    public void gostartPoint(Stack<Point> pastPath) {
+        System.out.println("GOING startPoint!");
+        while (!pastPath.isEmpty()) {
+            Point p = pastPath.getFirst();
+            pastPath.removeFirst();
             goTo(p);
         }
-        System.out.println("I'm at HOME!");
+        System.out.println("I'm at startPoint!");
+    }
+
+    public void createThingRandomly() {
+        thingPoint = Point.createRandomPoint(0, streets-1, 0, avenues-1);
+        treasure = new Thing(getCity(), thingPoint.y, thingPoint.x);
     }
 }

@@ -8,7 +8,6 @@ public class RobotTask {
         City maze = new MazeCity(streets, avenues);
 
         MazeBot mB = new MazeBot(maze, 3,4, streets, avenues);
-        mB.takeShortestPath();
-        mB.goHome();
+        mB.infiniteSearching();
     }
 }

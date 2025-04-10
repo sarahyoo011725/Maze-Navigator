@@ -42,7 +42,7 @@ public class DaveSoftware extends RobotSE {
      * get the current point
      * @return current point
      */
-    public Point getCurrentPoint() {
+    public Point getCurrent() {
         return new Point(getX(), getY());
     }
 

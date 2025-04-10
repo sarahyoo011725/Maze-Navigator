@@ -17,6 +17,11 @@ public class Point {
         this.y = 0;
     }
 
+    //This is used to calculate h value
+    public double distanceTo(Point other) {
+        return Math.sqrt(Math.pow(x - other.x, 2) + Math.pow(y - other.y, 2));
+    }
+
     /**
      * Generate random point within specified range
      * @param x_min minimum value of x-coordinate
@@ -43,6 +48,11 @@ public class Point {
         }
         Point other = (Point) obj;
         return this.x == other.x && this.y == other.y;
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 * (31 + x) + y;
     }
 
     /**

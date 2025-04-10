@@ -3,10 +3,11 @@ import becker.robots.*;
 public class RobotTask {
 
     public void run() {
-        City maze = new MazeCity(10, 10);
+        final int streets = 10;
+        final int avenues = 10;
+        City maze = new MazeCity(streets, avenues);
 
         MazeBot mB = new MazeBot(maze, 3,4);
-        mB.findThing();  
-        mB.goHome();
+        mB.Astar();
     }
 }

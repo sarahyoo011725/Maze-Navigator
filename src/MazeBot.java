@@ -50,10 +50,10 @@ public class MazeBot extends DaveSoftware{
        } 
     }
 
+    ArrayList<RobotSE> dummyBag = new ArrayList<>();
     /**
      * find shortest path using fancy A* algorithm
      */
-    ArrayList<RobotSE> dummyBag = new ArrayList<>();
     public Stack<Point> findShortestPath(Point startPoint, Point goalPoint) {
         Stack<Point> path = new Stack<>();
 

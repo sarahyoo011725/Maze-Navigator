@@ -1,6 +1,5 @@
 import becker.robots.*;
 import java.awt.Color;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Stack;
 import java.util.HashMap;
@@ -10,6 +9,8 @@ import java.util.PriorityQueue;
 public class MazeBot extends DaveSoftware{
     private Thing treasure;
     private Point thingPoint;
+    private final Point home;
+    public boolean shouldGoHome = false;
 
     private final int streets, avenues;
     
@@ -17,6 +18,7 @@ public class MazeBot extends DaveSoftware{
         super(city, y, x);
         this.streets = streets;
         this.avenues = avenues;
+        home = new Point(x, y);
         thingPoint = Point.createRandomPoint(0, 10, 0, 10);
         treasure = new Thing(city, thingPoint.y, thingPoint.x);
     }
@@ -33,6 +35,10 @@ public class MazeBot extends DaveSoftware{
 
     public void infiniteSearching() {
        while (treasure != null) {
+            if (shouldGoHome) {
+                goHome();
+                return;
+            }
            Stack<Point> path = findShortestPath(getCurrent(), thingPoint); 
            solve(path);
            createThingRandomly();
@@ -145,10 +151,9 @@ public class MazeBot extends DaveSoftware{
      * go pick the thing
      */
     public void solve(Stack<Point> path) {
-        Stack<Point> copy = (Stack<Point>)path.clone();
-        while (!copy.isEmpty()) {
-            Point p = copy.getLast();
-            copy.pop();
+        while (!path.isEmpty()) {
+            Point p = path.getLast();
+            path.pop();
             goTo(p);
         }
         pickAllThings();
@@ -159,14 +164,12 @@ public class MazeBot extends DaveSoftware{
     /**
      * go back to startPoint by reversely iterating through path stack
      */
-    public void gostartPoint(Stack<Point> pastPath) {
-        System.out.println("GOING startPoint!");
-        while (!pastPath.isEmpty()) {
-            Point p = pastPath.getFirst();
-            pastPath.removeFirst();
-            goTo(p);
-        }
-        System.out.println("I'm at startPoint!");
+    public void goHome() {
+        System.out.println("GOING HOME!");
+        Stack<Point> pathToHome = findShortestPath(getCurrent(), home);
+        solve(pathToHome);
+        System.out.println("I'm at Home!");
+        shouldGoHome = false;
     }
 
     public void createThingRandomly() {

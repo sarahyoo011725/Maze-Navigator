@@ -120,7 +120,7 @@ public class MazeBot extends DaveSoftware{
             }
         }
 
-        //no path found
+        //no path found. empty stack is returned 
         return path;
     }
 
@@ -159,7 +159,6 @@ public class MazeBot extends DaveSoftware{
         pickAllThings();
         System.out.println("found the treasure!");
     }
-
 
     /**
      * go back to startPoint by reversely iterating through path stack
